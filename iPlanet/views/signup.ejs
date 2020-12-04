@@ -1,0 +1,66 @@
+<script>
+    // Llamado asincrónico para registrar un nuevo usuario
+
+    var app = angular.module('Signup', []);
+
+    app.controller('SignupController', ($scope, $http) => {
+        $scope.user = {
+            firstName: 'Federico',
+            lastName: 'Gomez',
+            birthDate: '1980-01-01',
+            cityId: 1,
+            username: 'fgomez',
+            password: 'fgomez'
+        };
+
+        $scope.signup = () => {
+            $http({
+                url: 'http://localhost:3000/signup',
+                method: 'POST',
+                data: $scope.user
+            }).then((result) => {
+                console.log(result);
+            });
+        }
+    })
+</script>
+<div class="container mt-3" ng-app="Signup" ng-controller="SignupController">
+    <h3>Sign Up</h3>
+    <p>
+        Sign up to our website to keep posted about our services.
+    </p>
+    <form method="POST" action="/signup" style="width: 500px;">
+        <div class="form-group">
+            <label for="txtFirstName">First name:</label>
+            <input type="text" class="form-control" name="firstName" id="txtFirstName" />
+        </div>
+        <div class="form-group">
+            <label for="txtLastName">Last name:</label>
+            <input type="text" class="form-control" name="lastName" id="txtLastName" />
+        </div>
+        <div class="form-group">
+            <label for="txtBirthDate">Birth Date:</label>
+            <input type="date" class="form-control" name="birthDate" id="txtBirthDate" />
+        </div>
+        <div class="form-group">
+            <label for="cmbCity">City:</label>
+            <select id="cmbCity" class="form-control" name="cityId">
+                <% for (let city of cities) { %>
+                    <option value="<%= city.id %>"><%= city.cityName %></option>
+                <% } %>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="txtUsername">User name:</label>
+            <input type="text" class="form-control" name="username" id="txtUsername" />
+        </div>
+        <div class="form-group">
+            <label for="txtPassword">Password:</label>
+            <input type="password" class="form-control" name="password" id="txtPassword" />
+        </div>
+        <div class="form-group mb-5">
+            <input type="submit" value="Sign Up" class="btn btn-dark" />
+            <input type="button" value="Ajax sign up" class="btn btn-dark" ng-click="signup()" />
+        </div>
+    </form>
+</div>

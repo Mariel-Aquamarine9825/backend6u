@@ -1,0 +1,68 @@
+<script>
+    var app = angular.module('NewArticle', []);
+    app.directive('ckEditor', () => {
+        return {
+            require: 'ngModel',
+            link: (scope, element, attr, ngModel) => {
+                var ck = CKEDITOR.replace(element[0]);
+
+                if (!ngModel) {
+                    return;
+                }
+
+                ck.on('pasteState', () => {
+                    scope.$apply(() => {
+                        ngModel.$setViewValue(ck.getData());
+                    });
+                });
+
+                ngModel.$render = (value) => {
+                    ck.setData(ngModel.$viewValue);
+                }
+            }
+        }
+    })
+
+    app.controller('NewArticleController', ($scope, $http) => {
+        $scope.article = {
+            id: '',
+            title: '',
+            articleText: ''
+        }
+
+        angular.element(document).ready(() => {
+            let articleid = document.getElementById('txtArticleId').value;
+            if (articleid !== '') {
+                $http({
+                    url: 'http://localhost:3000/article/' + articleid,
+                    method: 'GET'
+                }).then((response) => {
+                    $scope.article.id = response.data.id;
+                    $scope.article.title = response.data.title;
+                    $scope.article.articleText = response.data.articleText;
+                })
+            }
+        })
+
+        $scope.submitArticle = () => {
+            // Complete code over here
+        }
+    })
+</script>
+<div class="container mt-3" ng-app="NewArticle">
+    <h3>New article</h3>
+    <form ng-controller="NewArticleController" ng-submit="submitArticle()" style="width: 700px;" class="mx-auto">
+        <input type="hidden" id="txtArticleId" value="<%= articleId %>" />
+        <div class="form-group">
+            <label for="txtTitle">Title:</label>
+            <input type="text" class="form-control" ng-model="article.title" />
+        </div>
+        <div class="form-group">
+            <label for="txtArticleText">Article text:</label>
+            <textarea id="txtArticleText" ck-editor ng-model="article.articleText" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Post Article" />
+        </div>
+    </form>
+</div>
